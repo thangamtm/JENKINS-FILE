@@ -1,103 +1,17 @@
-def CONFIG_REPO_NAME = "TBS-CONFIG"
-def CONFIG_REPO_BRANCH = "develop"
-def CONFIG_REPO_FOLDER = "TBS-GATEWAY"   
-def CONFIG_REPO_URL = "https://github.com/Gloud-Academy/TECH-OPS-DOCKER-GATEWAY.git"
-
-
-
-
+def EMAIL_TO_LIST = "thanga.mariappan@gove.co,Harish@alitasys.com"
 
 
 pipeline {
-   agent any
-
+    agent any
     stages { 
-       
-        stage('INSTALLING THE DEPENDENCIES') {
+        stage('PRE-DEPLOYMENT EMAIL') {
             steps {
-                script{
-                    catchError {
-                        sh 'npm install'
-                    }
+                script {
+                    mail to: "${EMAIL_TO_LIST}",
+                    subject: "${currentBuild.fullDisplayName} : DEPLOYMENT STARTS",
+                    body: "Automated Deployment for ${currentBuild.fullDisplayName} has been initiated by code change in the Develop branch, please stand by, an email will be sent after deployment has been completed."
                 }
             }
-        } 
-        stage('SETTING UP ALL THE CONFIGURATIONS') {
-            steps {
-                script{
-                    catchError {
-                        sh "node command.js deleteFolder ${CONFIG_REPO_NAME}"
-                    }
-                    catchError {
-                        sh "git clone --recurse-submodules ${CONFIG_REPO_URL} -b ${CONFIG_REPO_BRANCH}"
-                    }
-                    catchError {
-                        sh "node command.js copyFilesToRoot  ${CONFIG_REPO_NAME}/${CONFIG_REPO_FOLDER} package.json"
-                    }
-                    catchError {
-                        sh "node command.js copyFilesToRoot  ${CONFIG_REPO_NAME}/${CONFIG_REPO_FOLDER} .env"
-                    }
-                    catchError {
-                        sh "node command.js copyFilesToRoot  ${CONFIG_REPO_NAME}/${CONFIG_REPO_FOLDER} .npmrc"
-                    }
-                    catchError {
-                        sh "node command.js copyFilesToRoot  ${CONFIG_REPO_NAME}/${CONFIG_REPO_FOLDER} Dockerfile" 
-                    }
-                    catchError {
-                        sh "node command.js copyFilesToRoot  ${CONFIG_REPO_NAME}/${CONFIG_REPO_FOLDER} config.js"
-                    }
-                    catchError {
-                        sh "node command.js deleteFolder ${CONFIG_REPO_NAME}"
-                    }
-                }
-            }
-        }
-        stage('STOPPING THE CURRENTLY RUNNING CONTAINER') {
-            steps {
-                script{
-                    catchError {
-                        sh 'npm run docker-stop-container'
-                    }
-                }
-            }
-        }
-        stage('DELETING THE STOPPED CONTAINER') {
-            steps{
-                script{
-                    catchError {
-                        sh 'npm run docker-delete-container'
-                    }
-                }
-            }
-        }
-        stage('DELETING THE IMAGE OF THE CONTAINER') {
-            steps{
-                script{
-                    catchError {
-                        sh 'npm run docker-delete-image'
-                    }
-                }
-
-            }
-        }
-        stage('BUILDING A NEW IMAGE FROM SOURCE CODE') {
-            steps{
-                script{
-                    catchError{
-                        sh 'npm run docker-build-image' 
-                    }
-                }
-            }
-        }
-        stage('RUNNING A NEW CONATINER FROM NEW IMAGE') {
-            steps{
-                script{
-                    catchError{
-                        sh 'npm run docker-start-new-container'
-                    }
-                }
-            }
-        }
-       
-    }
+        }   
+    }   
 }
