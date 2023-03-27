@@ -4,14 +4,14 @@ def EMAIL_TO_LIST = "thanga.mariappan@gove.co,Harish@alitasys.com"
 pipeline {
     agent any
     stages { 
-        stage('PRE-DEPLOYMENT EMAIL') {
+        stage('INSTALLING THE DEPENDENCIES') {
             steps {
-                script {
-                    mail to: "${EMAIL_TO_LIST}",
-                    subject: "${currentBuild.fullDisplayName} : DEPLOYMENT STARTS",
-                    body: "Automated Deployment for ${currentBuild.fullDisplayName} has been initiated by code change in the Develop branch, please stand by, an email will be sent after deployment has been completed."
+                script{
+                    catchError {
+                        sh 'npm install'
+                    }
                 }
             }
-        }   
-    }   
+        }     
+    }
 }
