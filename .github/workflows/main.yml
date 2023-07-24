@@ -15,4 +15,4 @@ jobs:
       - name: Fetch and pull changes
         run: |
           git fetch origin
-          git pull origin master
+          git pull origin develop
