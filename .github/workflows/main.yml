@@ -6,7 +6,7 @@ on:
 
 jobs:
   backup:
-    runs-on: ubuntu-latest  # You can choose other OS options as well
+    runs-on: windows-10  # You can choose other OS options as well
 
     steps:
       - name: Checkout code
